@@ -1,0 +1,2174 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Mirage User & Auth Service",
+    "version": "1.0.0",
+    "description": "API C++17/Drogon con Supabase Auth y Profile. Usa login y copia access_token en Authorize. Los ejemplos son ficticios; las llamadas Try it out modifican el proyecto Supabase configurado."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Este servidor"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Profile"
+    },
+    {
+      "name": "Preferences"
+    },
+    {
+      "name": "Health"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Registrar una cuenta",
+        "operationId": "registerAccount",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "EnvÃ­a el correo de verificaciÃ³n. Sin sesiÃ³n no crea aÃºn el perfil; el primer login lo inicializa.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Iniciar sesiÃ³n con correo y contraseÃ±a",
+        "operationId": "login",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos; lÃ­mite local de 5 intentos por IP/120 segundos y lÃ­mites de Supabase.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Asegura un perfil para la cuenta; conserva preferencias y medidas existentes.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/google": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Iniciar sesiÃ³n con Google",
+        "operationId": "googleSignIn",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos; lÃ­mite local de 5 intentos por IP/120 segundos y lÃ­mites de Supabase.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Intercambia el ID token por una sesiÃ³n de Supabase y asegura el perfil. Requiere Google Sign-In configurado en Flutter.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Renovar la sesiÃ³n",
+        "operationId": "refreshSession",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Consultar el usuario autenticado",
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Comprueba identidad y existencia de la sesión en auth.sessions; un token firmado de una sesión cerrada devuelve 401."
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Cerrar la sesiÃ³n actual",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Empty"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Cierra la sesión actual. Las peticiones posteriores a Mirage y a los datos de Profile rechazan el access token de esa sesión inmediatamente. Otras sesiones continúan activas. Los servicios futuros deben comprobar sesión activa, no solo firma JWT."
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Solicitar recuperaciÃ³n de contraseÃ±a",
+        "operationId": "recoverPassword",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos; lÃ­mite local de 5 intentos por IP/120 segundos y lÃ­mites de Supabase.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "description": "Envía el enlace estándar de Supabase y devuelve un mensaje genérico. En desarrollo, abrirlo desde el PC del servidor; lleva a /auth/callback. La página de solicitud está en /auth/recovery."
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "put": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Actualizar la contraseÃ±a",
+        "operationId": "resetPassword",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PasswordChanged"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Requiere una sesión activa (de recuperación o autenticada). Cambia la contraseña y cierra todas las sesiones, incluida la de recuperación. Iniciar sesión de nuevo. Si devuelve password_changed_session_revocation_failed, la contraseña ya cambió pero la revocación no pudo confirmarse.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profiles": {
+      "post": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Crear el perfil de una cuenta autenticada",
+        "operationId": "createProfile",
+        "responses": {
+          "201": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "La cuenta ya tiene un perfil.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Normalmente el login ya crea el perfil. Esta ruta se conserva para creaciÃ³n explÃ­cita; devuelve 409 si ya existe.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/profiles/{userId}": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Consultar perfil, preferencias y medidas",
+        "operationId": "getProfile",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La cuenta no es propietaria del perfil solicitado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El perfil todavÃ­a no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "UUID de la cuenta autenticada (no el id independiente del perfil).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "22222222-2222-2222-2222-222222222222"
+            }
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Actualizar los datos personales",
+        "operationId": "updateProfile",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La cuenta no es propietaria del perfil solicitado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El perfil todavÃ­a no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Reemplaza displayName, birthDate y profileImageUrl. Los opcionales omitidos se borran (null). Conserva preferencias y medidas.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "UUID de la cuenta autenticada (no el id independiente del perfil).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "22222222-2222-2222-2222-222222222222"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/profiles/{userId}/preferences": {
+      "get": {
+        "tags": [
+          "Preferences"
+        ],
+        "summary": "Consultar preferencias",
+        "operationId": "getPreferences",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La cuenta no es propietaria del perfil solicitado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El perfil todavÃ­a no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "UUID de la cuenta autenticada (no el id independiente del perfil).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "22222222-2222-2222-2222-222222222222"
+            }
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Preferences"
+        ],
+        "summary": "Reemplazar preferencias",
+        "operationId": "updatePreferences",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preferences"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La cuenta no es propietaria del perfil solicitado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El perfil todavÃ­a no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Reemplaza las cuatro listas completas. No permite un color simultÃ¡neamente preferido y evitado.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Preferences"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "UUID de la cuenta autenticada (no el id independiente del perfil).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "22222222-2222-2222-2222-222222222222"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/profiles/{userId}/measurements": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Consultar medidas corporales",
+        "operationId": "getMeasurements",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NullableMeasurements"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La cuenta no es propietaria del perfil solicitado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El perfil todavÃ­a no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Las medidas son null hasta registrarlas.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "UUID de la cuenta autenticada (no el id independiente del perfil).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "22222222-2222-2222-2222-222222222222"
+            }
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Reemplazar medidas corporales",
+        "operationId": "updateMeasurements",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BodyMeasurements"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "La cuenta no es propietaria del perfil solicitado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El perfil todavÃ­a no existe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Todas las medidas usan centÃ­metros.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyMeasurements"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "UUID de la cuenta autenticada (no el id independiente del perfil).",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "22222222-2222-2222-2222-222222222222"
+            }
+          }
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Estado del servidor",
+        "operationId": "health",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "El proceso responde; no comprueba la disponibilidad de Supabase.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/resend-verification": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Reenviar verificación de correo",
+        "operationId": "resendVerification",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos; lÃ­mite local de 5 intentos por IP/120 segundos y lÃ­mites de Supabase.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        },
+        "description": "Respuesta genérica para cuentas inexistentes, ya confirmadas o pendientes. Solo envía si la confirmación está pendiente."
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "summary": "Verificar el código de correo",
+        "operationId": "verifyEmail",
+        "responses": {
+          "200": {
+            "description": "OperaciÃ³n completada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Session"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Entrada invÃ¡lida o solicitud rechazada por el proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer ausente/invÃ¡lido o autenticaciÃ³n rechazada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "El cuerpo supera 16 KiB.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiados intentos; lÃ­mite local de 5 intentos por IP/120 segundos y lÃ­mites de Supabase.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Respuesta invÃ¡lida o fallo del proveedor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "ConfiguraciÃ³n ausente o inicializaciÃ³n del perfil temporalmente no disponible.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Código de un solo uso para confirmar signup o recovery. La sesión se valida y se asegura el perfil. El código debe proceder del correo de Supabase.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerificationRequest"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Access token de Supabase. Introducir solo el token; Swagger agrega Bearer."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "profile_access_denied"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Entre 1 y 100 bytes UTF-8; no solo espacios.",
+            "example": "Mateo"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "mateo@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "format": "password",
+            "writeOnly": true,
+            "example": "Replace-With-Your-Test-Password"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "mateo@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "format": "password",
+            "writeOnly": true,
+            "example": "Replace-With-Your-Test-Password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "GoogleRequest": {
+        "type": "object",
+        "properties": {
+          "id_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192,
+            "writeOnly": true,
+            "description": "ID token real obtenido por Google Sign-In en Flutter; no es el Client Secret."
+          },
+          "nonce": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "id_token"
+        ]
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8192,
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "refresh_token"
+        ]
+      },
+      "EmailRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "mateo@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "PasswordRequest": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "format": "password",
+            "writeOnly": true,
+            "example": "Replace-With-Your-Test-Password"
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "22222222-2222-2222-2222-222222222222"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "mateo@example.com"
+          },
+          "email_confirmed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "user_metadata": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": true
+          }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "JWT de Supabase; usar en Authorize. No compartirlo."
+          },
+          "refresh_token": {
+            "type": "string",
+            "description": "Guardar de forma segura en el cliente."
+          },
+          "token_type": {
+            "type": "string",
+            "example": "bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "example": 3600
+          },
+          "expires_at": {
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "profile_ready": {
+            "type": "boolean",
+            "description": "Login/Google lo devuelven true despuÃ©s de comprobar o crear el perfil."
+          }
+        },
+        "required": [
+          "access_token",
+          "refresh_token",
+          "token_type"
+        ]
+      },
+      "RegistrationResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "22222222-2222-2222-2222-222222222222"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "mateo@example.com"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "profile_ready": {
+            "type": "boolean",
+            "description": "false mientras se espera confirmaciÃ³n de correo."
+          }
+        },
+        "additionalProperties": true,
+        "required": [
+          "profile_ready"
+        ]
+      },
+      "ProfileInput": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Entre 1 y 100 bytes UTF-8; no solo espacios.",
+            "example": "Mateo"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2000-02-29",
+            "description": "Desde 1900; fecha real, no futura."
+          },
+          "profileImageUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "maxLength": 2048,
+            "description": "URL HTTPS o null."
+          }
+        },
+        "required": [
+          "displayName"
+        ]
+      },
+      "Preferences": {
+        "type": "object",
+        "properties": {
+          "preferredStyles": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "example": [
+              "casual"
+            ]
+          },
+          "preferredColors": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "example": [
+              "blue"
+            ]
+          },
+          "avoidedColors": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "example": []
+          },
+          "preferredCategories": {
+            "type": "array",
+            "maxItems": 50,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "example": [
+              "shirt"
+            ]
+          }
+        },
+        "required": [
+          "preferredStyles",
+          "preferredColors",
+          "avoidedColors",
+          "preferredCategories"
+        ]
+      },
+      "BodyMeasurements": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 175
+          },
+          "shoulderWidth": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 45
+          },
+          "chest": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 95
+          },
+          "waist": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 80
+          },
+          "hip": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 96
+          }
+        },
+        "required": [
+          "height",
+          "shoulderWidth",
+          "chest",
+          "waist",
+          "hip"
+        ]
+      },
+      "NullableMeasurements": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 175
+          },
+          "shoulderWidth": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 45
+          },
+          "chest": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 95
+          },
+          "waist": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 80
+          },
+          "hip": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true,
+            "maximum": 1000,
+            "description": "CentÃ­metros (cm).",
+            "example": 96
+          }
+        },
+        "required": [
+          "height",
+          "shoulderWidth",
+          "chest",
+          "waist",
+          "hip"
+        ],
+        "nullable": true
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Entre 1 y 100 bytes UTF-8; no solo espacios.",
+            "example": "Mateo"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2000-02-29",
+            "description": "Desde 1900; fecha real, no futura."
+          },
+          "profileImageUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "maxLength": 2048,
+            "description": "URL HTTPS o null."
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "22222222-2222-2222-2222-222222222222"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "22222222-2222-2222-2222-222222222222"
+          },
+          "avatarReference": {
+            "type": "string",
+            "nullable": true,
+            "readOnly": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/Preferences"
+          },
+          "measurements": {
+            "$ref": "#/components/schemas/NullableMeasurements"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "displayName",
+          "birthDate",
+          "profileImageUrl",
+          "avatarReference",
+          "createdAt",
+          "updatedAt",
+          "preferences",
+          "measurements"
+        ]
+      },
+      "Empty": {
+        "type": "object",
+        "properties": {}
+      },
+      "RecoveryMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "If the account exists, a recovery email will be sent."
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "VerificationRequest": {
+        "type": "object",
+        "required": [
+          "email",
+          "token",
+          "type"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254,
+            "example": "mateo@example.com"
+          },
+          "token": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 10,
+            "pattern": "^[0-9]+$",
+            "writeOnly": true,
+            "example": "12345678"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "signup",
+              "recovery"
+            ]
+          }
+        }
+      },
+      "PasswordChanged": {
+        "type": "object",
+        "required": [
+          "message",
+          "reauthentication_required"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Password updated. Sign in again."
+          },
+          "reauthentication_required": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      }
+    }
+  }
+}

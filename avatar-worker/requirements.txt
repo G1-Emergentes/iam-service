@@ -1,0 +1,9 @@
+# CPU is sufficient for this first version. Install torch from the CPU index first.
+anny==0.6.2
+fastapi==0.162.2
+uvicorn==0.54.0
+scipy==1.18.1
+httpx==0.28.1
+pytest==9.2.0
+python-multipart==0.0.33
+pillow==13.0.0

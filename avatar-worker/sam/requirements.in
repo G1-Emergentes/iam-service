@@ -1,0 +1,16 @@
+# Minimal body-only probe; excludes detectors, segmentation, training and hosted inference.
+# CUDA torch/torchvision are installed separately from the official cu128 index.
+numpy==2.2.6
+pytorch-lightning
+opencv-python-headless
+yacs
+omegaconf
+einops
+timm
+roma
+trimesh
+scipy
+braceexpand
+fastapi
+uvicorn
+python-multipart

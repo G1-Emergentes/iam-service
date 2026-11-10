@@ -1,0 +1,16 @@
+<!doctype html><html><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
+<style>html,body,canvas{width:100%;height:100%;margin:0;overflow:hidden;touch-action:none}#error{position:absolute;top:40%;text-align:center;width:100%;font:16px sans-serif}</style>
+<canvas id="model" aria-label="Interactive SAM body"></canvas><div id="error" role="status">Loading your avatar…</div>
+<script src="/assets/babylon.js"></script><script src="/assets/babylonjs.loaders.min.js"></script><script>
+const canvas=document.getElementById('model'),engine=new BABYLON.Engine(canvas,true),scene=new BABYLON.Scene(engine);
+scene.clearColor=BABYLON.Color4.FromHexString('#E4DAF6FF');
+const camera=new BABYLON.ArcRotateCamera('camera',Math.PI/2,Math.PI/2.1,3,new BABYLON.Vector3(0,.9,0),scene);
+camera.attachControl(canvas,true);camera.minZ=.01;camera.lowerRadiusLimit=.4;camera.upperRadiusLimit=8;
+new BABYLON.HemisphericLight('sky',new BABYLON.Vector3(0,1,-1),scene).intensity=1.3;
+new BABYLON.HemisphericLight('fill',new BABYLON.Vector3(0,0,1),scene).intensity=.5;
+engine.runRenderLoop(()=>scene.render());window.addEventListener('resize',()=>engine.resize());
+BABYLON.SceneLoader.LoadAssetContainerAsync('/api/reconstructions/JOB_ID/','model.glb',scene).then(container=>{
+container.addAllToScene();const b=container.meshes[0].getHierarchyBoundingVectors(),s=b.max.subtract(b.min);
+camera.target.copyFrom(b.min.add(b.max).scale(.5));camera.radius=Math.max(s.x,s.y,s.z)*1.8;document.getElementById('error').hidden=true;
+}).catch(()=>document.getElementById('error').textContent='Could not load the avatar. Go back and try again.');
+</script></html>

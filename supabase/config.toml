@@ -1,0 +1,6 @@
+project_id = "mirage-iam"
+
+# Development callback; open email links on the PC running Drogon.
+# Configure the deployed frontend/deep-link destination before release.
+[auth]
+site_url = "http://127.0.0.1:8080/auth/callback"

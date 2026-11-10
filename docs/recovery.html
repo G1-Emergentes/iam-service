@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f5ef">
+  <title>Recuperar contraseña · Mirage</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/auth/email-flow.css">
+</head>
+<body data-flow="recovery">
+  <header class="site-header">
+    <span class="wordmark">Mirage</span>
+    <span class="header-note">YOUR EVERYDAY, REIMAGINED <span class="spark" aria-hidden="true">✦</span></span>
+  </header>
+  <main class="auth-layout">
+    <aside class="editorial" aria-label="Mirage">
+      <span class="eyebrow">A LITTLE RESET. A FRESH START.</span>
+      <p class="editorial-title">Your style.<br>Your space<span class="pink-dot">.</span></p>
+      <p class="editorial-copy">Tu armario, tus ideas y todas las versiones de ti.<br>Un espacio al que siempre puedes volver.</p>
+      <div class="editorial-art" aria-hidden="true">
+        <div class="art-label">MADE FOR YOU <span>✦</span></div>
+        <div class="art-window"><span class="art-orbit"></span><span class="art-star">✦</span></div>
+        <div class="art-caption"><span>See more.<br><em>Be you.</em></span><span class="art-arrow">↗</span></div>
+        <span class="art-sticker">YOUR NEXT CHAPTER</span>
+      </div>
+      <span class="editorial-footnote">A CLOSET FULL OF POSSIBILITIES.</span>
+    </aside>
+    <section class="auth-panel" aria-labelledby="page-title">
+      <div class="panel-top"><span class="step-label">TU CUENTA, A TU MEDIDA</span><span class="spark" aria-hidden="true">✦</span></div>
+      <h1 id="page-title">Un nuevo comienzo.</h1>
+      <p class="intro" id="flow-description">Recibe un enlace por correo para recuperar tu cuenta. Si ya tienes un código, también puedes usarlo aquí.</p>
+      <form id="email-form">
+        <div class="field" id="email-field">
+          <label for="email">Correo electrónico</label>
+          <input id="email" type="email" autocomplete="username" maxlength="254" placeholder="tu@ejemplo.com" required>
+        </div>
+        <button class="button button-secondary" id="send-code" type="button">Enviar correo <span aria-hidden="true">↗</span></button>
+        <div class="field" id="code-field">
+          <label for="code">Código recibido <span class="label-note">si tu correo lo incluye</span></label>
+          <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" minlength="6" maxlength="10" placeholder="Escribe tu código" required>
+        </div>
+        <div class="field" id="password-field">
+              <label for="password">Nueva contraseña</label>
+              <input id="password" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Crea una contraseña segura" aria-describedby="password-hint" required>
+              <p class="hint" id="password-hint">Entre 8 y 128 caracteres. Solo tuya.</p>
+            </div>
+        <button class="button button-primary" id="submit" type="submit">Cambiar contraseña <span aria-hidden="true">→</span></button>
+      </form>
+      <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <footer class="panel-footer"><span>Make room for what comes next.</span><a href="/docs">Documentación de la API <span aria-hidden="true">↗</span></a></footer>
+    </section>
+  </main>
+  <footer class="site-footer"><span>Mirage © 2026</span><span>YOUR CLOSET. YOUR RULES.</span></footer>
+  <script src="/auth/email-flow.js"></script>
+</body>
+</html>

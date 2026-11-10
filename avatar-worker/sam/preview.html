@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mirage · Prueba SAM</title>
+<link rel="icon" href="data:,">
+<style>
+body{margin:32px;background:#f8f6ef;color:#242320;font:16px system-ui}h1{font:40px Georgia}main{display:flex;gap:24px;flex-wrap:wrap}section{flex:1;min-width:280px}img,canvas{width:100%;height:460px;object-fit:contain;background:#e5daf4;border-radius:18px}canvas{touch-action:none}strong{color:#dc0063}p{max-width:850px;line-height:1.6}
+</style>
+<h1>Mirage · Foto → cuerpo 3D</h1>
+<p>Prueba local con una imagen de ejemplo oficial. <strong>No son medidas corporales validadas.</strong> Gira el modelo arrastrando; usa la rueda para acercarte.</p>
+<main><section><h2>Imagen de entrada</h2><img id="input" alt="Imagen oficial usada para la reconstrucción"></section><section><h2>Reconstrucción SAM</h2><canvas id="model" aria-label="Vista interactiva del cuerpo reconstruido"></canvas></section></main>
+<p id="status" role="status">Cargando reconstrucción…</p>
+<script src="babylon.js"></script><script src="babylonjs.loaders.min.js"></script>
+<script>
+const canvas=document.getElementById('model');
+const engine=new BABYLON.Engine(canvas,true);
+const scene=new BABYLON.Scene(engine);scene.clearColor=BABYLON.Color4.FromHexString('#E5DAF4FF');
+const camera=new BABYLON.ArcRotateCamera('camera',Math.PI/2,Math.PI/2.1,3,new BABYLON.Vector3(0,.9,0),scene);
+camera.attachControl(canvas,true);camera.minZ=.01;camera.lowerRadiusLimit=.4;camera.upperRadiusLimit=8;
+new BABYLON.HemisphericLight('sky',new BABYLON.Vector3(0,1,-1),scene).intensity=1.3;
+new BABYLON.HemisphericLight('fill',new BABYLON.Vector3(0,0,1),scene).intensity=.5;
+engine.runRenderLoop(()=>scene.render());window.addEventListener('resize',()=>engine.resize());
+(async()=>{
+ const response=await fetch('report.json');if(!response.ok)throw Error('Falta el informe');
+ const report=await response.json();document.getElementById('input').src=report.inputFile;
+ const container=await BABYLON.SceneLoader.LoadAssetContainerAsync('./','reconstruction.glb',scene);container.addAllToScene();
+ const bounds=container.meshes[0].getHierarchyBoundingVectors();const size=bounds.max.subtract(bounds.min);
+ camera.target.copyFrom(bounds.min.add(bounds.max).scale(.5));camera.radius=Math.max(size.x,size.y,size.z)*1.8;
+ document.getElementById('status').textContent=`Modelo cargado · ${report.vertices} vértices · ${report.inferenceSeconds} s de inferencia · ${Math.round(report.peakReservedMiB)} MiB de VRAM reservada. Escala y contornos pendientes de calibración.`;
+})().catch(error=>{document.getElementById('status').textContent='No se pudo cargar la reconstrucción: '+error.message;});
+</script>
+</html>
